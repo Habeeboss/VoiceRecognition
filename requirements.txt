@@ -3,3 +3,4 @@ joblib
 streamlit
 librosa
 numpy
+tensorflow
