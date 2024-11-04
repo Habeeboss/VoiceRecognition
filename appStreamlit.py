@@ -36,7 +36,7 @@ modelsNames = {
 }
 
 speaker_dict = {
-    0: "Abdul Hamid",
+    0: "AbdulHamid",
     1: "Abdurrafiu",
     2: "Abubakar",
     3: "Aisha",
@@ -74,6 +74,12 @@ modelCnn = keras.models.load_model('CNN MODEL.keras')
 modelRnn = keras.models.load_model('RNN MODEL.keras')
 modelKnn = joblib.load('KNN MODEL.joblib')
 
+scalerANN = joblib.load('ANN SCALER.joblib')
+scalerCNN = joblib.load('CNN SCALER.joblib')
+scalerRNN = joblib.load('RNN SCALER.joblib')
+scalerKNN = joblib.load('KNN SCALER.joblib')
+
+
 models ={
     'ANN': modelAnn,
     'CNN': modelCnn,
@@ -85,21 +91,17 @@ models ={
 def predict_with_model(audio_data, model_name):
     X = process_audio_file(audio_data).reshape(1,-1)
     if model_name=='NONE':
-        # preds = []
-        # preds.append(models['ANN'].predict(X).argmax())
-        # preds.append(models['CNN'].predict(X).argmax())
-        # preds.append(models['RNN'].predict(X.reshape(1,1,-1)).argmax())
-        # preds.append(models['KNN'].predict(X).tolist()[0])
-        # output = f"{speaker_dict[preds[0]]} by ANN, {speaker_dict[preds[1]]} by CNN, {speaker_dict[preds[2]]} by RNN, {speaker_dict[preds[3]]} by KNN"
         model_name = random.choice(list(models.keys()))
-        if model_name=='ANN' or model_name=='CNN': return f"{speaker_dict[models[model_name].predict(X).argmax()]} by {model_name}"
-        elif model_name == 'KNN': return f"{speaker_dict[models['KNN'].predict(X).tolist()[0]]} by KNN"
-        else: return f"{speaker_dict[models['RNN'].predict(X.reshape(1,1,-1)).argmax()]} by RNN"
+        if model_name=='ANN': return f"{speaker_dict[models[model_name].predict(scalerANN.transform(X)).argmax()]} by {model_name}"
+        elif model_name=='CNN': return f"{speaker_dict[models[model_name].predict(scalerCNN.transform(X)).argmax()]} by {model_name}"
+        elif model_name == 'KNN': return f"{speaker_dict[models['KNN'].predict(scalerKNN.transform(X)).tolist()[0]]} by KNN"
+        else: return f"{speaker_dict[models['RNN'].predict(scalerRNN.transform(X).reshape(1,1,-1)).argmax()]} by RNN"
         # return output
     else:
-        if model_name=='ANN' or model_name=='CNN': return models[model_name].predict(X).argmax()
-        elif model_name == 'KNN': return models['KNN'].predict(X).tolist()[0]
-        else: return models['RNN'].predict(X.reshape(1,1,-1)).argmax()
+        if model_name=='ANN': return models[model_name].predict(scalerANN.transform(X)).argmax()
+        elif model_name=='CNN': return models[model_name].predict(scalerCNN.transform(X)).argmax()
+        elif model_name == 'KNN': return models['KNN'].predict(scalerKNN.transform(X)).tolist()[0]
+        else: return models['RNN'].predict(scalerRNN.transform(X).reshape(1,1,-1)).argmax()
 
 # Streamlit App UI
 st.title("Audio Classifier")
