@@ -116,7 +116,7 @@ model_name = st.radio("Choose a model for prediction", ['NONE', 'ANN', 'CNN', 'R
 
 if audio_file is not None and model_name is not None:
     y, sr = librosa.load(audio_file, mono=True, duration=30)
-    st.audio(y, format=audio_file.name.split('.')[-1], sample_rate = sr, autoplay = True, loop = True)
+    st.audio(y, format=audio_file.name.split('.')[-1], sample_rate = sr, autoplay = False, loop = False)
 
 
 # Prediction section
